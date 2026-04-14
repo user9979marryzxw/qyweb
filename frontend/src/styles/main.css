@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-foreground antialiased font-sans;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-2 bg-brand-green text-white rounded-2xl transition-all duration-300 hover:opacity-90 active:scale-95 flex items-center justify-center;
+  }
+  .btn-outline {
+    @apply px-6 py-2 border border-brand-silver text-brand-slate rounded-2xl transition-all duration-300 hover:bg-gray-50 active:scale-95 flex items-center justify-center;
+  }
+  .card-premium {
+    @apply bg-white border border-gray-100 rounded-3xl overflow-hidden transition-all duration-500 hover:shadow-xl hover:shadow-gray-200/50;
+  }
+  .glass-nav {
+    @apply sticky top-0 z-50 bg-white/70 backdrop-blur-md border-b border-gray-100;
+  }
+}
+
+/* 隐藏滚动条但保留功能 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #E5E7EB;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D1D5DB;
+}

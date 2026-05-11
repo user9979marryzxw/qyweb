@@ -1,0 +1,22 @@
+package com.liu.service;
+
+import com.liu.dto.ProductDTO;
+import com.liu.dto.ProductPageQueryDTO;
+import com.liu.result.PageResult;
+
+public interface ProductService {
+
+    /**
+     * 新增产品
+     * @param productDTO
+     * @return
+     */
+    void saveProduct(ProductDTO productDTO);
+
+    /**
+     * 产品分页查询
+     * @param productPageQueryDTO
+     * @return
+     */
+    PageResult pageQuery(ProductPageQueryDTO productPageQueryDTO);
+}

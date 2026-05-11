@@ -50,8 +50,14 @@ export function getProducts(params: {
   category?: number;
   search?: string;
 }): Promise<ApiResponse<PageResult<Product>>> {
-  return api.get<ApiResponse<PageResult<Product>>>('/products', { 
-    params,
+  // 设置默认 size 为 10
+  const queryParams = {
+    ...params,
+    size: params.size || 10  // 如果未提供 size，默认 10
+  };
+
+  return api.get<ApiResponse<PageResult<Product>>>('/product/page', {
+    params: queryParams,
     // 设置缓存控制（虽然 axios 默认不缓存，但明确标识逻辑）
     headers: { 'Cache-Control': 'no-cache' } 
   }).then((res) => {
@@ -70,10 +76,24 @@ export function getProducts(params: {
  * 获取商品详情
  */
 export function getProductDetail(id: number): Promise<ApiResponse<Product>> {
-  return api.get<ApiResponse<Product>>(`/products/${id}`).then((res) => {
+  return api.get<ApiResponse<Product>>(`/product/page/${id}`).then((res) => {
     if (res.data && res.data.data) {
       res.data.data.image = formatImageUrl(res.data.data.image);
     }
     return res.data;
   });
+}
+
+/**
+ * 添加商品
+ */
+export function addProduct(product: {
+  name: string;
+  price: number;
+  stock: number;
+  image: string;
+  description: string;
+  category: number;
+}): Promise<ApiResponse<void>> {
+  return api.post('/product/add', product).then((res) => res.data);
 }

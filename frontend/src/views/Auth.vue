@@ -5,13 +5,14 @@ import { ArrowLeft, QrCode, RefreshCw, AlertCircle, User, Lock, ShieldCheck, Eye
 import { useAuthStore } from '../stores/auth'
 import { login as loginApi } from '../services/user'
 import toast from '../utils/toast'
+import RegisterPanel from '../components/RegisterPanel.vue'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 
-// 登录方式：'wechat' 或 'password'
-const loginMode = ref<'wechat' | 'password'>('wechat')
+// 登录方式：'wechat'、'password' 或 'register'
+const loginMode = ref<'wechat' | 'password' | 'register'>('wechat')
 
 // 表单数据
 const form = ref({
@@ -110,7 +111,7 @@ onUnmounted(() => {
         </div>
 
         <!-- Mode Switcher -->
-        <div class="flex p-1.5 bg-gray-50 rounded-2xl mb-10 border border-gray-100">
+        <div v-if="loginMode !== 'register'" class="flex p-1.5 bg-gray-50 rounded-2xl mb-10 border border-gray-100">
           <button 
             @click="loginMode = 'wechat'"
             class="flex-1 py-3 rounded-xl text-sm font-bold transition-all duration-500 flex items-center justify-center space-x-2"
@@ -162,12 +163,15 @@ onUnmounted(() => {
               <p v-if="qrStatus === 'active'" class="text-[10px] text-brand-slate opacity-30 font-bold uppercase tracking-widest">
                 Expires in {{ countdown }}s
               </p>
+              <div class="pt-6">
+                <button @click="loginMode = 'register'" class="text-xs font-bold text-brand-green hover:underline">立即注册账号</button>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Password Login Content -->
-        <div v-else class="animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div v-else-if="loginMode === 'password'" class="animate-in fade-in slide-in-from-bottom-4 duration-700">
           <form @submit.prevent="handlePasswordLogin" class="space-y-6">
             <div class="space-y-2">
               <label class="text-[10px] font-bold text-brand-slate uppercase tracking-widest opacity-40 ml-1">Username / Phone</label>
@@ -237,7 +241,7 @@ onUnmounted(() => {
                 />
                 <span class="text-xs font-bold text-brand-slate opacity-50 group-hover:opacity-100 transition-opacity">记住我 (7天免登录)</span>
               </label>
-              <a href="#" class="text-xs font-bold text-brand-green hover:underline">忘记密码?</a>
+              <button @click="loginMode = 'register'" type="button" class="text-xs font-bold text-brand-green hover:underline">立即注册</button>
             </div>
 
             <button 
@@ -249,6 +253,15 @@ onUnmounted(() => {
               <span>{{ isSubmitting ? '正在安全登录...' : '立即登录' }}</span>
             </button>
           </form>
+        </div>
+
+        <!-- Register Content -->
+        <div v-else-if="loginMode === 'register'">
+          <div class="mb-8 text-left">
+            <h3 class="text-xl font-bold text-gray-900">创建新账户</h3>
+            <p class="text-xs text-brand-slate opacity-40 font-medium mt-1">开始您的青云奢享之旅</p>
+          </div>
+          <RegisterPanel :onSwitchToLogin="() => loginMode = 'password'" />
         </div>
 
         <!-- Footer Link -->

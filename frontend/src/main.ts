@@ -21,9 +21,9 @@ app.directive('auth', {
         e.preventDefault()
         e.stopPropagation()
         toast.warning('请先登录后操作')
-        setTimeout(() => {
-          router.push('/auth')
-        }, 1500)
+        // setTimeout(() => {
+        //   router.push('/auth')
+        // }, 1500)
       }
     }
 

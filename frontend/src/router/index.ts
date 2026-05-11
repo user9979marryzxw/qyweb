@@ -28,13 +28,13 @@ const routes = [
     path: '/custom-domestic',
     name: 'CustomDomestic',
     component: () => import('../views/Domestic.vue'),
-    meta: { requiresAuth: true }
+    // meta: { requiresAuth: true }
   },
   {
     path: '/global-tour',
     name: 'GlobalTour',
     component: () => import('../views/International.vue'),
-    meta: { requiresAuth: true }
+    // meta: { requiresAuth: true }
   },
   {
     path: '/auth',
@@ -45,6 +45,40 @@ const routes = [
     path: '/product/:id',
     name: 'ProductDetail',
     component: () => import('../views/ProductDetail.vue')
+  },
+  {
+    path: '/console',
+    name: 'Console',
+    component: () => import('../views/ConsoleLayout.vue'),
+    redirect: '/console/dashboard',
+    meta: { requiresAuth: true, requiresAdmin: true },
+    children: [
+      {
+        path: 'dashboard',
+        name: 'ConsoleDashboard',
+        component: () => import('../views/ConsoleDashboard.vue')
+      },
+      {
+        path: 'products',
+        name: 'ConsoleProducts',
+        component: () => import('../views/ConsoleProducts.vue')
+      },
+      {
+        path: 'orders',
+        name: 'ConsoleOrders',
+        component: () => import('../views/ConsoleOrders.vue')
+      },
+      {
+        path: 'users',
+        name: 'ConsoleUsers',
+        component: () => import('../views/ConsoleUsers.vue')
+      },
+      {
+        path: 'logs',
+        name: 'ConsoleLogs',
+        component: () => import('../views/ConsoleLogs.vue')
+      }
+    ]
   }
 ]
 
@@ -66,6 +100,8 @@ router.beforeEach((to, from, next) => {
   }
 
   const requiresAuth = to.meta.requiresAuth
+  const requiresAdmin = to.meta.requiresAdmin
+
   if (requiresAuth && !authStore.isLogin) {
     toast.warning('请先登录后访问')
     setTimeout(() => {
@@ -74,6 +110,9 @@ router.beforeEach((to, from, next) => {
         query: { redirect: to.fullPath }
       })
     }, 1500)
+  } else if (requiresAdmin && !authStore.isAdmin) {
+    toast.error('权限不足，无法进入控制台')
+    next('/')
   } else {
     next()
   }

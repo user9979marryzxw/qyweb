@@ -36,8 +36,15 @@ api.interceptors.response.use(
   (response: AxiosResponse<ApiResponse<any>>) => {
     // Backend returns code 1 for success
     if (response.data.code !== 1) {
-      console.error(response.data.message);
-      throw new Error(response.data.message);
+      const errorMsg = response.data.message || '系统繁忙，请稍后再试';
+      console.error(`[API Error] ${response.config.url}: ${errorMsg}`);
+      
+      // 仅在浏览器环境下弹出提示
+      if (typeof window !== 'undefined') {
+        import('../utils/toast').then(m => m.default.error(errorMsg));
+      }
+      
+      throw new Error(errorMsg);
     }
     return response;
   },
@@ -47,13 +54,19 @@ api.interceptors.response.use(
     // HTTP 401 response: Unauthorized / Token expired
     if (error.response && error.response.status === 401) {
       authStore.clearAuth();
-      // Redirect to login page only if not already there
       if (!window.location.pathname.includes('/auth')) {
         window.location.href = `/auth?redirect=${encodeURIComponent(window.location.pathname)}`;
       }
+      return Promise.reject(error);
+    }
+
+    // 处理网络超时或断网
+    const errorMsg = error.response?.data?.message || error.message || '网络连接异常';
+    if (typeof window !== 'undefined') {
+      import('../utils/toast').then(m => m.default.error(errorMsg));
     }
     
-    throw error; // Propagate other errors
+    return Promise.reject(error);
   }
 );
 
@@ -74,7 +87,7 @@ axiosRetry(api, {
  * @param {string} username - The username, required.
  * @param {string} password - The password, required.
  * @param {boolean} rememberMe - Whether to extend validity to 7 days.
- * @returns {Promise<ApiResponse<{ token: string; userId: number; username: string; nickname: string; avatar: string; permissions: string[] }>>}
+ * @returns {Promise<ApiResponse<{ token: string; userId: number; username: string; nickname: string; avatar: string; isAdmin: boolean }>>}
  */
 export function login(username: string, password: string, rememberMe: boolean = false): Promise<ApiResponse<any>> {
   return api.post('/user/login', { username, password, rememberMe }).then((res) => res.data);

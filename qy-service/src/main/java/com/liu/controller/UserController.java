@@ -1,6 +1,11 @@
 package com.liu.controller;
 
+import com.github.pagehelper.Page;
+import com.liu.constant.MessageConstant;
 import com.liu.dto.UserDTO;
+import com.liu.dto.UserPageQueryDTO;
+import com.liu.exception.BaseException;
+import com.liu.result.PageResult;
 import com.liu.result.Result;
 import com.liu.service.UserService;
 import com.liu.vo.UserVO;
@@ -37,7 +42,7 @@ public class UserController {
         log.info("用户登录: {}", userDTO.getUsername());
         User user = userService.login(userDTO);
 
-        //TODO登录成功后，生成jwt令牌
+        //登录成功后，生成jwt令牌
         Map<String,Object> claims = Map.of(USER_ID, user.getId());
         String token = generateToken(user.getUsername(),claims);
         log.info("生成jwt令牌: {}", token);
@@ -47,8 +52,8 @@ public class UserController {
                 .token(token)
                 .userId(user.getId())
                 .avatar(user.getAvatar())
-                .permissions(null)
                 .nickname(user.getNickname())
+                .isAdmin(user.getIsAdmin())
                 .build();
         return Result.success(userVO);
     }

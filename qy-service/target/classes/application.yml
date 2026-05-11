@@ -7,3 +7,14 @@ spring:
     url: jdbc:mysql://localhost:3306/qyweb?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
     username: root
     password: 123456 # 请根据实际情况修改密码
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true # 启用驼峰命名映射
+
+pagehelper:
+  helper-dialect: mysql # 指定数据库方言
+  params: count=countSql
+  reasonable: true # 合理分页（页码小于1时返回第一页，大于最大页时返回最后一页）
+

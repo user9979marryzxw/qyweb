@@ -16,5 +16,5 @@ public class UserVO {
     private String nickname;
     private String avatar;
     private Integer userId;
-    private String[] permissions;
+    private Boolean isAdmin;
 }

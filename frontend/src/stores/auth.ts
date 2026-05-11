@@ -1,12 +1,13 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import {data} from "autoprefixer";
 
 interface UserInfo {
   username: string
   nickname: string
   avatar: string
-  permissions: string[]
   userId: number
+  isAdmin: boolean
   [key: string]: any
 }
 //
@@ -27,24 +28,19 @@ export const useAuthStore = defineStore('auth', () => {
   const loginAttempts = ref(0)
   const showCaptcha = ref(false)
 
-  // 权限菜单（根据用户信息中的 permissions 生成）
-  const permissionMenu = computed(() => {
-    if (!userInfo.value || !userInfo.value.permissions) return []
-    // 模拟根据权限列表过滤菜单逻辑
-    return userInfo.value.permissions
-  })
+  const isAdmin = computed(() => !!userInfo.value?.isAdmin)
 
   /**
    * 登录成功处理
    */
-  const login = (data: { token: string, userId: number, username: string, nickname: string, avatar: string, permissions: string[] }) => {
+  const login = (data: { token: string, userId: number, username: string, nickname: string, avatar: string, isAdmin: boolean }) => {
     accessToken.value = data.token
     userInfo.value = {
       userId: data.userId,
       username: data.username,
       nickname: data.nickname || '',
       avatar: data.avatar || '',
-      permissions: data.permissions || []
+      isAdmin: !!data.isAdmin
     }
     isLogin.value = true
     loginAttempts.value = 0
@@ -90,13 +86,13 @@ export const useAuthStore = defineStore('auth', () => {
     isLogin,
     userInfo,
     accessToken,
-    permissionMenu,
+    isAdmin,
     loginAttempts,
     showCaptcha,
     login,
     logout,
     clearAuth,
-    handleLoginFailure,
-    checkAuth
+    checkAuth,
+    handleLoginFailure
   }
 })

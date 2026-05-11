@@ -8,6 +8,9 @@ const authStore = useAuthStore()
 const router = useRouter()
 const isMenuOpen = ref(false)
 
+const handleConsole = () => {
+  router.push('/console')
+}
 const handleLogout = () => {
   authStore.logout()
   isMenuOpen.value = false
@@ -41,7 +44,7 @@ const handleLogout = () => {
           class="flex items-center space-x-3 px-4 py-1.5 bg-brand-green text-white rounded-full transition-all hover:bg-brand-green/90 group"
         >
           <img :src="authStore.userInfo?.avatar" class="w-8 h-8 rounded-full border-2 border-white/20" alt="Avatar" />
-          <span class="font-bold text-xs">进入控制台</span>
+          <span class="font-bold text-xs">{{ authStore.isAdmin ? '进入控制台' : '个人中心' }}</span>
           <ChevronDown class="w-4 h-4 transition-transform duration-300" :class="{'rotate-180': isMenuOpen}" />
         </button>
 
@@ -59,14 +62,20 @@ const handleLogout = () => {
               <p class="text-xs text-brand-slate font-medium">欢迎回来,</p>
               <p class="text-sm font-bold truncate">{{ authStore.userInfo?.nickname }}</p>
             </div>
+            
             <button class="w-full px-4 py-2.5 text-left text-sm text-brand-slate hover:bg-gray-50 flex items-center space-x-3 transition-colors">
               <UserIcon class="w-4 h-4" />
               <span>个人中心</span>
             </button>
-            <button class="w-full px-4 py-2.5 text-left text-sm text-brand-slate hover:bg-gray-50 flex items-center space-x-3 transition-colors">
+
+            <button
+                v-if="authStore.isAdmin"
+                @click="handleConsole"
+                class="w-full px-4 py-2.5 text-left text-sm text-brand-slate hover:bg-gray-50 flex items-center space-x-3 transition-colors">
               <LayoutDashboard class="w-4 h-4" />
-              <span>控制台</span>
+              <span>控制台管理</span>
             </button>
+
             <div class="h-px bg-gray-50 my-1 mx-2"></div>
             <button 
               @click="handleLogout"

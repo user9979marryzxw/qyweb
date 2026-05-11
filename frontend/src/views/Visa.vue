@@ -1,55 +1,35 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Search, ShieldCheck, Zap, Globe, Clock, ArrowRight } from 'lucide-vue-next'
+import { Search, ShieldCheck, Zap, Globe, Clock } from 'lucide-vue-next'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 import ProductCard from '@/components/ProductCard.vue'
-
-gsap.registerPlugin(ScrollTrigger)
+import UnifiedPaginationModule from '@/components/UnifiedPaginationModule.vue'
 
 const activeFilter = ref('热门')
 const filters = ['热门', '亚洲', '欧洲', '美洲', '大洋洲', '非洲']
+const searchQuery = ref('')
 
-const visaProducts = [
-  {
-    id: 20,
-    category: '签证服务',
-    rating: 4.9,
-    title: '日本个人旅游签证 · 极简材料',
-    description: '专业文案 1对1 指导，最快 5 个工作日出签，高通过率保障。',
-    price: 399,
-    image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=800'
-  },
-  {
-    id: 21,
-    category: '签证服务',
-    rating: 5.0,
-    title: '欧洲申根签证 · 法国/德国/意大利',
-    description: '含行程单/保险/酒店预订单，专业陪签服务，省心之选。',
-    price: 1280,
-    image: 'https://images.unsplash.com/photo-1431274172761-fca41d930114?q=80&w=800'
-  },
-  {
-    id: 22,
-    category: '签证服务',
-    rating: 4.8,
-    title: '美国 B1/B2 签证 · 面签培训',
-    description: '资深顾问模拟面试，材料深度挖掘，提升获签机率。',
-    price: 1580,
-    image: 'https://images.unsplash.com/photo-1485738422979-f5c462d49f74?q=80&w=800'
-  },
-  {
-    id: 23,
-    category: '签证服务',
-    rating: 4.9,
-    title: '澳洲电子签证 · 极速出签',
-    description: '无需寄送护照，在线提交材料，专业审核，极速反馈。',
-    price: 880,
-    image: 'https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?q=80&w=800'
+const queryParams = ref({
+  destination: activeFilter.value === '热门' ? undefined : activeFilter.value,
+  search: searchQuery.value
+})
+
+const handleFilterChange = (filter: string) => {
+  activeFilter.value = filter
+  queryParams.value = {
+    ...queryParams.value,
+    destination: filter === '热门' ? undefined : filter
   }
-]
+}
+
+const handleSearch = () => {
+  queryParams.value = {
+    ...queryParams.value,
+    search: searchQuery.value
+  }
+}
 
 onMounted(() => {
   gsap.from('.banner-content', {
@@ -58,23 +38,11 @@ onMounted(() => {
     duration: 1,
     ease: 'power3.out'
   })
-
-  gsap.from('.product-grid > *', {
-    scrollTrigger: {
-      trigger: '.product-grid',
-      start: 'top 80%'
-    },
-    y: 30,
-    opacity: 0,
-    duration: 0.8,
-    stagger: 0.1,
-    ease: 'power2.out'
-  })
 })
 </script>
 
 <template>
-  <div class="min-h-screen">
+  <div class="min-h-screen bg-[#F9FAFB]">
     <Header />
 
     <!-- Banner -->
@@ -106,7 +74,7 @@ onMounted(() => {
             </div>
             <div>
               <h4 class="font-bold text-sm">极速办理</h4>
-              <p class="text-xs text-brand-slate mt-1">专业团队高效审理</p>
+              <p class="text-xs text-brand-slate mt-1">最快 24 小时出签</p>
             </div>
           </div>
           <div class="flex items-center space-x-4">
@@ -115,7 +83,7 @@ onMounted(() => {
             </div>
             <div>
               <h4 class="font-bold text-sm">全球覆盖</h4>
-              <p class="text-xs text-brand-slate mt-1">支持 100+ 国家签证</p>
+              <p class="text-xs text-brand-slate mt-1">支持 150+ 国家签证</p>
             </div>
           </div>
           <div class="flex items-center space-x-4">
@@ -123,8 +91,8 @@ onMounted(() => {
               <Clock class="w-6 h-6 text-brand-green" />
             </div>
             <div>
-              <h4 class="font-bold text-sm">实时进度</h4>
-              <p class="text-xs text-brand-slate mt-1">全程掌握签证状态</p>
+              <h4 class="font-bold text-sm">全程跟踪</h4>
+              <p class="text-xs text-brand-slate mt-1">进度实时短信提醒</p>
             </div>
           </div>
         </div>
@@ -138,39 +106,52 @@ onMounted(() => {
           <button 
             v-for="filter in filters" 
             :key="filter"
-            @click="activeFilter = filter"
+            @click="handleFilterChange(filter)"
             class="px-5 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap"
             :class="activeFilter === filter ? 'bg-brand-green text-white shadow-lg shadow-brand-green/20' : 'text-brand-slate hover:bg-gray-50'"
           >
             {{ filter }}
           </button>
         </div>
-        <div class="relative w-full md:w-64">
-          <Search class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-slate opacity-50" />
-          <input type="text" placeholder="搜索目的地国家..." class="w-full bg-gray-50 border border-gray-100 rounded-full px-10 py-2.5 text-sm focus:outline-none focus:border-brand-green transition-all" />
+        
+        <div class="relative w-full md:w-80">
+          <Search class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-slate opacity-40" />
+          <input 
+            v-model="searchQuery"
+            @keyup.enter="handleSearch"
+            type="text" 
+            placeholder="搜索国家或签证类型" 
+            class="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/10 focus:border-brand-green transition-all"
+          />
         </div>
       </div>
     </section>
 
-    <!-- Product List -->
+    <!-- Visa Products Grid with UnifiedPaginationModule -->
     <main class="max-w-7xl mx-auto px-8 py-16">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 product-grid">
-        <ProductCard v-for="product in visaProducts" :key="product.id" v-bind="product" />
-      </div>
-
-      <!-- Pagination (Mock) -->
-      <div class="mt-20 flex justify-center items-center space-x-4">
-        <button class="w-10 h-10 rounded-xl border border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-30" disabled>
-          <ArrowRight class="w-4 h-4 rotate-180" />
-        </button>
-        <div class="flex items-center space-x-2">
-          <button class="w-10 h-10 rounded-xl bg-brand-green text-white font-bold text-sm shadow-lg shadow-brand-green/20">1</button>
-          <button class="w-10 h-10 rounded-xl hover:bg-gray-50 text-sm font-medium transition-colors">2</button>
-        </div>
-        <button class="w-10 h-10 rounded-xl border border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-colors">
-          <ArrowRight class="w-4 h-4" />
-        </button>
-      </div>
+      <UnifiedPaginationModule 
+        category="visa"
+        fetchUrl="/products"
+        :pageSize="12"
+        :queryParams="queryParams"
+      >
+        <template #default="{ list }: { list: any[] }">
+          <div class="product-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <ProductCard 
+              v-for="product in list" 
+              :key="product.id"
+              class="new-item"
+              :id="product.id"
+              :category="product.category_name || '签证服务'"
+              :title="product.name"
+              :description="product.description"
+              :price="product.price"
+              :image="product.image"
+              :rating="product.rating || 5.0"
+            />
+          </div>
+        </template>
+      </UnifiedPaginationModule>
     </main>
 
     <Footer />

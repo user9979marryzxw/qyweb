@@ -25,7 +25,7 @@ describe('Auth Store', () => {
       username: 'testuser',
       nickname: '测试用户',
       avatar: 'avatar-url',
-      permissions: ['view_products', 'buy']
+      isAdmin: false
     }
     auth.login(mockData)
     
@@ -48,19 +48,18 @@ describe('Auth Store', () => {
     expect(auth.showCaptcha).toBe(true)
   })
 
-  it('权限菜单应根据用户 permissions 自动计算', () => {
+  it('管理员状态应正确识别', () => {
     const auth = useAuthStore()
     auth.login({
       token: 'token',
       userId: 1,
-      username: 'u',
+      username: 'admin',
       nickname: 'n',
       avatar: 'a',
-      permissions: ['p1', 'p2']
+      isAdmin: true
     })
     
-    expect(auth.permissionMenu).toContain('p1')
-    expect(auth.permissionMenu).toContain('p2')
+    expect(auth.isAdmin).toBe(true)
   })
 
   it('登出应清除所有敏感状态', () => {
@@ -74,7 +73,7 @@ describe('Auth Store', () => {
       username: 'u',
       nickname: 'n',
       avatar: 'a',
-      permissions: []
+      isAdmin: false
     })
     
     auth.logout()

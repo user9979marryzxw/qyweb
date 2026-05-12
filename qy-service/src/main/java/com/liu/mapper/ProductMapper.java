@@ -6,6 +6,7 @@ import com.liu.entity.Product;
 import com.liu.vo.ProductVO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Select;
 
 public interface ProductMapper {
 
@@ -30,4 +31,12 @@ public interface ProductMapper {
      * @return
      */
     Page<ProductVO> pageQuery(ProductPageQueryDTO productPageQueryDTO);
+
+    /**
+     * 根据ID查询产品
+     * @param id
+     * @return
+     */
+    @Select("select * from product where id = #{id}")
+    Product pageQueryById(Long id);
 }

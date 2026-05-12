@@ -13,5 +13,5 @@ public interface ConsoleMapper {
      * @param userPageQueryDTO
      * @return
      */
-    List<UserVO> pageQuery(UserPageQueryDTO userPageQueryDTO);
+    List<UserVO> userpageQuery(UserPageQueryDTO userPageQueryDTO);
 }

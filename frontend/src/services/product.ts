@@ -97,3 +97,7 @@ export function addProduct(product: {
 }): Promise<ApiResponse<void>> {
   return api.post('/product/add', product).then((res) => res.data);
 }
+
+export function deleteProduct(id: number): Promise<ApiResponse<void>> {
+  return api.delete(`/product/${id}`).then((res) => res.data);
+}

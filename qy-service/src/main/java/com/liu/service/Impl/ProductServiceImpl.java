@@ -40,17 +40,25 @@ public class ProductServiceImpl implements ProductService {
      * @param productPageQueryDTO
      * @return
      */
-    //TODO：分页查询在大于11条数据时bug，前端默认size为10，用户无法改变size大小
-    //分页查询的total和pages计数出错,这里手动计算。
+    //TODO:分页查询的total和pages计数出错
     public PageResult pageQuery(ProductPageQueryDTO productPageQueryDTO) {
         PageHelper.startPage(productPageQueryDTO.getPage(),productPageQueryDTO.getPageSize());
 
         List<ProductVO> list = productMapper.pageQuery(productPageQueryDTO);
 
         PageInfo<ProductVO> pageInfo = new PageInfo<>(list);
+        Long total=pageInfo.getTotal();
+        return new PageResult(total, pageInfo.getPages(), pageInfo.getList());
+    }
 
-        long total = productMapper.countProducts();
-        int pages = (int)Math.ceil((double)total/productPageQueryDTO.getPageSize());
-        return new PageResult(total, pages, pageInfo.getList());
+    /**
+     * 根据ID查询产品
+     * @param id
+     * @return
+     */
+    public ProductVO pageQueryById(Long id) {
+        ProductVO productVO = new ProductVO();
+        BeanUtils.copyProperties(productMapper.pageQueryById(id),productVO);
+        return productVO;
     }
 }

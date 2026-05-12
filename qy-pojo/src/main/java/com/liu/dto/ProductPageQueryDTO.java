@@ -1,9 +1,15 @@
 package com.liu.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 @Data
-public class ProductPageQueryDTO {
+@AllArgsConstructor
+@NoArgsConstructor
+public class ProductPageQueryDTO implements Serializable {
     private int page = 1;
 
     private int pageSize = 10;

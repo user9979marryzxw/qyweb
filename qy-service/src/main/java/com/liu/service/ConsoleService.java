@@ -1,5 +1,6 @@
 package com.liu.service;
 
+import com.liu.dto.LogPageQueryDTO;
 import com.liu.dto.UserPageQueryDTO;
 import com.liu.result.PageResult;
 
@@ -10,5 +11,8 @@ public interface ConsoleService {
      * @param userPageQueryDTO
      * @return
      */
-    PageResult pageQuery(UserPageQueryDTO userPageQueryDTO);
+    PageResult userpageQuery(UserPageQueryDTO userPageQueryDTO);
+
+
+    PageResult logsPageQuery(LogPageQueryDTO logPageQueryDTO);
 }

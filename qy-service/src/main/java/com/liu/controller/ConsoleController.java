@@ -1,5 +1,6 @@
 package com.liu.controller;
 
+import com.liu.dto.LogPageQueryDTO;
 import com.liu.dto.UserPageQueryDTO;
 import com.liu.result.PageResult;
 import com.liu.result.Result;
@@ -30,7 +31,20 @@ public class ConsoleController {
     @GetMapping("/users")
     public Result<PageResult> page(UserPageQueryDTO userPageQueryDTO){
         log.info("用户分页查询: {}",userPageQueryDTO);
-        PageResult pageResult = consoleService.pageQuery(userPageQueryDTO);
+        PageResult pageResult = consoleService.userpageQuery(userPageQueryDTO);
+        return Result.success(pageResult);
+    }
+
+    /**
+     * 日志分页查询
+     * @param logPageQueryDTO
+     * @return
+     */
+    @ApiOperation("日志分页查询")
+    @GetMapping("/logs")
+    public Result<PageResult> page(LogPageQueryDTO logPageQueryDTO){
+        log.info("日志分页查询: {}",logPageQueryDTO);
+        PageResult pageResult = consoleService.logsPageQuery(logPageQueryDTO);
         return Result.success(pageResult);
     }
 
